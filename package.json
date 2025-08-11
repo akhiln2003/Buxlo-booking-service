@@ -22,10 +22,12 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "@buxlo/common": "^1.0.90",
+    "@buxlo/common": "^1.0.93",
+    "@grpc/grpc-js": "^1.13.4",
     "cookie-parser": "^1.4.7",
     "mongoose": "^8.17.0",
     "morgan": "^1.10.1",
+    "rrule": "^2.8.1",
     "socket.io": "^4.8.1"
   }
 }

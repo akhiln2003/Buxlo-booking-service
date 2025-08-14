@@ -4,12 +4,12 @@ import { IavailabilityRepository } from "../../../infrastructure/@types/Iavailab
 import { IfetchAvailabilityUseCase } from "../../interface/mentor/IfetchAvailabilityUseCase";
 
 export class FetchAvailabilityUseCase implements IfetchAvailabilityUseCase {
-  constructor(private availabilityRepo: IavailabilityRepository) {}
+  constructor(private _availabilityRepo: IavailabilityRepository) {}
   async execute(mentorId: string): Promise<AvailabilityEntities[]> {
     try {
       console.log("Fetching availability for mentor ID:", mentorId);
 
-      return await this.availabilityRepo.findByMentorId(mentorId);
+      return await this._availabilityRepo.findByMentorId(mentorId);
     } catch (error) {
       console.error("Error from CreateOneSlotUseCase:", error);
       throw new BadRequest("Failed to fetch availability");

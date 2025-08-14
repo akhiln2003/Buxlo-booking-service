@@ -3,12 +3,12 @@ import { NextFunction, Request, Response } from "express";
 import { IcreateOneSlotUseCase } from "../../../application/interface/mentor/IcreateOneSlotUseCase";
 
 export class CreateOneSlotController {
-  constructor(private createOneSlotUseCase: IcreateOneSlotUseCase) {}
+  constructor(private _createOneSlotUseCase: IcreateOneSlotUseCase) {}
 
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const  data  = req.body;
-      const newSlot = await this.createOneSlotUseCase.execute(data);
+      const data = req.body;
+      const newSlot = await this._createOneSlotUseCase.execute(data);
       res.status(HttpStatusCode.OK).json({ newSlot });
     } catch (error) {
       console.error("Error createing one slot :", error);

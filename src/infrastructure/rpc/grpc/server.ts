@@ -1,4 +1,7 @@
-import { UpdateAvailabilityRequest, UpdateAvailabilityResponse } from "@buxlo/common";
+import {
+  UpdateAvailabilityRequest,
+  UpdateAvailabilityResponse,
+} from "@buxlo/common";
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 import path from "path";
@@ -17,22 +20,26 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   oneofs: true,
 });
 
-const bookingProto = (grpc.loadPackageDefinition(packageDefinition) as any).payment;
+const bookingProto = (grpc.loadPackageDefinition(packageDefinition) as any)
+  .payment;
 
 class BookingServiceGrpc {
-  private server: grpc.Server;
-  private port: number;
+  private _server: grpc.Server;
+  private _port: number;
 
   constructor(port: number) {
-    this.server = new grpc.Server();
-    this.port = port;
-    this.initializeService();
+    this._server = new grpc.Server();
+    this._port = port;
+    this._initializeService();
   }
 
-  private initializeService() {
+  private _initializeService() {
     const bookingService = {
       UpdateAvailability: async (
-        call: grpc.ServerUnaryCall<UpdateAvailabilityRequest, UpdateAvailabilityResponse>,
+        call: grpc.ServerUnaryCall<
+          UpdateAvailabilityRequest,
+          UpdateAvailabilityResponse
+        >,
         callback: grpc.sendUnaryData<UpdateAvailabilityResponse>
       ) => {
         const { id, status, isBooked } = call.request;
@@ -46,18 +53,18 @@ class BookingServiceGrpc {
       },
     };
 
-    this.server.addService(bookingProto.BookingService.service, bookingService);
+    this._server.addService(bookingProto.BookingService.service, bookingService);
   }
 
   public start(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.server.bindAsync(
-        `0.0.0.0:${this.port}`,
+      this._server.bindAsync(
+        `0.0.0.0:${this._port}`,
         grpc.ServerCredentials.createInsecure(),
         (err) => {
           if (err) return reject(err);
-          console.log(`gRPC Service running on port ${this.port}`);
-          this.server.start();
+          console.log(`gRPC Service running on port ${this._port}`);
+          this._server.start();
           resolve();
         }
       );

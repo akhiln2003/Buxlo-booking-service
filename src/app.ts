@@ -6,37 +6,40 @@ import { Iserver } from "./domain/interfaces/Iserver";
 // } from "./infrastructure/database/mongodb/connection";
 import loggerMiddleware from "./presentation/middlewares/loggerMiddleware";
 import { MentorRouter } from "./presentation/routes/mentorRouts";
-import { connectDB, disconnectDB } from "./infrastructure/database/mongodb/connection";
+import {
+  connectDB,
+  disconnectDB,
+} from "./infrastructure/database/mongodb/connection";
 import { grpcService } from "./infrastructure/rpc/grpc/server";
 // import { messageBroker } from "./infrastructure/MessageBroker/config";
 
 export class App {
-  constructor(private server: Iserver) {}
+  constructor(private _server: Iserver) {}
 
   async initialize(): Promise<void> {
-    await this.connectDB();
-    await this.connectGrpc();
+    await this._connectDB();
+    await this._connectGrpc();
     // await this.connectKafka();
-    this.registerMiddleware();
-    this.registerRoutes();
-    this.registerErrorHandler();
+    this._registerMiddleware();
+    this._registerRoutes();
+    this._registerErrorHandler();
   }
 
-  private registerMiddleware(): void {
-    this.server.registerMiddleware(loggerMiddleware);
+  private _registerMiddleware(): void {
+    this._server.registerMiddleware(loggerMiddleware);
   }
-  private registerRoutes(): void {
+  private _registerRoutes(): void {
     const mentorRoutes = new MentorRouter().getRouter();
 
-    this.server.registerRoutes("/api/booking/mentor", mentorRoutes);
+    this._server.registerRoutes("/api/booking/mentor", mentorRoutes);
   }
 
-  private registerErrorHandler(): void {
-    this.server.registerErrorHandler(errorHandler as any);
+  private _registerErrorHandler(): void {
+    this._server.registerErrorHandler(errorHandler as any);
   }
 
   async start(port: number): Promise<void> {
-    await this.server.start(port);
+    await this._server.start(port);
   }
 
   async shutdown(): Promise<void> {
@@ -44,7 +47,7 @@ export class App {
     // await messageBroker.disconnect();
     console.log("Shut dow server");
   }
-  private async connectDB() {
+  private async _connectDB() {
     try {
       await connectDB();
     } catch (error) {
@@ -53,7 +56,7 @@ export class App {
     }
   }
 
-    private async connectGrpc(): Promise<void> {
+  private async _connectGrpc(): Promise<void> {
     try {
       await grpcService.start();
       console.log("gRPC server started successfully.");
@@ -61,7 +64,6 @@ export class App {
       console.error("Failed to start gRPC server:", error);
     }
   }
-
 
   // private async connectKafka(): Promise<void> {
   //   await messageBroker.connect();

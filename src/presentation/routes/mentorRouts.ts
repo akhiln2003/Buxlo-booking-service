@@ -9,51 +9,51 @@ import { FetchAvailabilityController } from "../controllers/mentor/fetchAvailabi
 import { fetchavailabilityDto } from "../../zodSchemaDto/mentor/fetchavailability.dto";
 
 export class MentorRouter {
-  private router: Router;
-  private diContainer: DIContainer;
+  private _router: Router;
+  private _diContainer: DIContainer;
 
-  private createOneSlotController!: CreateOneSlotController;
-  private createRecurringSlotController!: CreateRecurringSlotController;
-  private fetchAvailabilityController!: FetchAvailabilityController;
+  private _createOneSlotController!: CreateOneSlotController;
+  private _createRecurringSlotController!: CreateRecurringSlotController;
+  private _fetchAvailabilityController!: FetchAvailabilityController;
 
   constructor() {
-    this.router = Router();
-    this.diContainer = new DIContainer();
-    this.initializeControllers();
-    this.initializeRoutes();
+    this._router = Router();
+    this._diContainer = new DIContainer();
+    this._initializeControllers();
+    this._initializeRoutes();
   }
 
-  private initializeControllers(): void {
-    this.createOneSlotController = new CreateOneSlotController(
-      this.diContainer.createOneSlotUseCase()
+  private _initializeControllers(): void {
+    this._createOneSlotController = new CreateOneSlotController(
+      this._diContainer.createOneSlotUseCase()
     );
-    this.createRecurringSlotController = new CreateRecurringSlotController(
-      this.diContainer.createRecurringSlotUseCase()
+    this._createRecurringSlotController = new CreateRecurringSlotController(
+      this._diContainer.createRecurringSlotUseCase()
     );
-    this.fetchAvailabilityController = new FetchAvailabilityController(
-      this.diContainer.fetchAvailabilityUseCase()
+    this._fetchAvailabilityController = new FetchAvailabilityController(
+      this._diContainer.fetchAvailabilityUseCase()
     );
   }
 
-  private initializeRoutes(): void {
-    this.router.post(
+  private _initializeRoutes(): void {
+    this._router.post(
       "/createoneslot",
       validateReqBody(createOneSlotDto),
-      this.createOneSlotController.create
+      this._createOneSlotController.create
     );
-    this.router.post(
+    this._router.post(
       "/createrecurringslot",
       validateReqBody(createRecurringSlotDto),
-      this.createRecurringSlotController.create
+      this._createRecurringSlotController.create
     );
-    this.router.get(
+    this._router.get(
       "/fetchslots/:mentorId",
       validateReqParams(fetchavailabilityDto),
-      this.fetchAvailabilityController.create
+      this._fetchAvailabilityController.create
     );
   }
 
   public getRouter(): Router {
-    return this.router;
+    return this._router;
   }
 }

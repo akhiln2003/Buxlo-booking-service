@@ -6,7 +6,7 @@ import { IavailabilityRepository } from "../../../infrastructure/@types/Iavailab
 import { IrecurringData } from "../../../domain/interfaces/IrecurringData";
 
 export class CreateRecurringSlotUseCase implements IcreateRecurringSlotUseCase {
-  constructor(private availabilityRepo: IavailabilityRepository) {}
+  constructor(private _availabilityRepo: IavailabilityRepository) {}
 
   async execute(data: IrecurringData): Promise<AvailabilityEntities[]> {
     try {
@@ -35,13 +35,13 @@ export class CreateRecurringSlotUseCase implements IcreateRecurringSlotUseCase {
         byweekday,
       });
 
-      const matchingDates = rule.all(); 
+      const matchingDates = rule.all();
 
       const slotsToCreate: AvailabilityEntities[] = matchingDates.map(
         (date) => ({
           mentorId,
           date: date.toISOString().split("T")[0],
-          description:  data.description,
+          description: data.description,
           startTime,
           duration,
           status: "available",
@@ -54,7 +54,7 @@ export class CreateRecurringSlotUseCase implements IcreateRecurringSlotUseCase {
 
       const createdSlots = await Promise.all(
         slotsToCreate.map((slot: AvailabilityEntities) =>
-          this.availabilityRepo.createRecurring(slot)
+          this._availabilityRepo.createRecurring(slot)
         )
       );
 

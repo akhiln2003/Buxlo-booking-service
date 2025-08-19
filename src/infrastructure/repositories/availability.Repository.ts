@@ -2,9 +2,13 @@ import { BadRequest } from "@buxlo/common";
 import { AvailabilityEntities } from "../../domain/entities/availabilityEntities";
 import { AvailabilitySchema } from "../database/mongodb/schema/availability.schema";
 import { IavailabilityRepository } from "../@types/IavailabilityRepository";
+import {
+  AvailabilityMapper,
+  AvailabilityResponseDto,
+} from "../../zodSchemaDto/output/availabilityResponse.dto";
 
 export class AvailabilityRepository implements IavailabilityRepository {
-  async create(data: AvailabilityEntities): Promise<AvailabilityEntities> {
+  async create(data: AvailabilityEntities): Promise<AvailabilityResponseDto> {
     try {
       const timeToMinutes = (time: string): number => {
         const [hours, minutes] = time.split(":").map(Number);
@@ -38,7 +42,8 @@ export class AvailabilityRepository implements IavailabilityRepository {
       }
 
       const newAvailability = AvailabilitySchema.build(data);
-      return await newAvailability.save();
+      const saveData = await newAvailability.save();
+      return AvailabilityMapper.toDto(saveData);
     } catch (error: any) {
       throw new BadRequest(`db error: ${error.message}`);
     }
@@ -46,7 +51,7 @@ export class AvailabilityRepository implements IavailabilityRepository {
 
   async createRecurring(
     data: AvailabilityEntities
-  ): Promise<AvailabilityEntities | null> {
+  ): Promise<AvailabilityResponseDto | null> {
     try {
       const timeToMinutes = (time: string): number => {
         const [hours, minutes] = time.split(":").map(Number);
@@ -72,15 +77,17 @@ export class AvailabilityRepository implements IavailabilityRepository {
       }
 
       const newAvailability = AvailabilitySchema.build(data);
-      return await newAvailability.save();
+      const saveData = await newAvailability.save();
+      return AvailabilityMapper.toDto(saveData);
     } catch (error: any) {
       return null;
     }
   }
 
-  async findByMentorId(mentorId: string): Promise<AvailabilityEntities[]> {
+  async findByMentorId(mentorId: string): Promise<AvailabilityResponseDto[]> {
     try {
-       return await AvailabilitySchema.find({ mentorId });
+      const slots = await AvailabilitySchema.find({ mentorId });
+      return slots.map((slot) => AvailabilityMapper.toDto(slot));
     } catch (error: any) {
       console.error("Error fetching availabilities:", error);
       throw new BadRequest(`Failed to fetch availabilities: ${error.message}`);
@@ -88,26 +95,27 @@ export class AvailabilityRepository implements IavailabilityRepository {
   }
 
   async getAverageSalary(mentorId: string): Promise<number> {
-  try {
-    const result = await AvailabilitySchema.aggregate([
-      {
-        $match: {
-          mentorId,
+    try {
+      const result = await AvailabilitySchema.aggregate([
+        {
+          $match: {
+            mentorId,
+          },
         },
-      },
-      {
-        $group: {
-          _id: null,
-          averageSalary: { $avg: "$salary" },
+        {
+          $group: {
+            _id: null,
+            averageSalary: { $avg: "$salary" },
+          },
         },
-      },
-    ]);
+      ]);
 
-    return result[0]?.averageSalary ?? 0;
-  } catch (error: any) {
-    console.error("Error calculating average salary:", error);
-    throw new BadRequest(`Failed to calculate average salary: ${error.message}`);
+      return result[0]?.averageSalary ?? 0;
+    } catch (error: any) {
+      console.error("Error calculating average salary:", error);
+      throw new BadRequest(
+        `Failed to calculate average salary: ${error.message}`
+      );
+    }
   }
-}
-
 }

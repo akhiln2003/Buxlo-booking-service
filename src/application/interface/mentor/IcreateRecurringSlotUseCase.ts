@@ -1,6 +1,6 @@
-import { AvailabilityEntities } from "../../../domain/entities/availabilityEntities";
 import { IrecurringData } from "../../../domain/interfaces/IrecurringData";
+import { AvailabilityResponseDto } from "../../../zodSchemaDto/output/availabilityResponse.dto";
 
 export interface IcreateRecurringSlotUseCase {
-  execute(data: IrecurringData): Promise<AvailabilityEntities[]>;
+  execute(data: IrecurringData): Promise<AvailabilityResponseDto[]>;
 }

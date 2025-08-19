@@ -4,18 +4,22 @@ import { IcreateRecurringSlotUseCase } from "../../interface/mentor/IcreateRecur
 import { AvailabilityEntities } from "../../../domain/entities/availabilityEntities";
 import { IavailabilityRepository } from "../../../infrastructure/@types/IavailabilityRepository";
 import { IrecurringData } from "../../../domain/interfaces/IrecurringData";
+import {
+  AvailabilityMapper,
+  AvailabilityResponseDto,
+} from "../../../zodSchemaDto/output/availabilityResponse.dto";
 
 export class CreateRecurringSlotUseCase implements IcreateRecurringSlotUseCase {
   constructor(private _availabilityRepo: IavailabilityRepository) {}
 
-  async execute(data: IrecurringData): Promise<AvailabilityEntities[]> {
+  async execute(data: IrecurringData): Promise<AvailabilityResponseDto[]> {
     try {
       const { mentorId, days, startTime, duration, startDate, endDate } = data;
 
       const start = new Date(startDate);
       const end = new Date(endDate);
 
-      // Convert day strings to RRule weekdays
+      // Map days -> rrule weekdays
       const rruleDayMap: Record<string, Weekday> = {
         Sunday: RRule.SU,
         Monday: RRule.MO,
@@ -37,6 +41,7 @@ export class CreateRecurringSlotUseCase implements IcreateRecurringSlotUseCase {
 
       const matchingDates = rule.all();
 
+      // Build raw slot entities
       const slotsToCreate: AvailabilityEntities[] = matchingDates.map(
         (date) => ({
           mentorId,
@@ -52,15 +57,17 @@ export class CreateRecurringSlotUseCase implements IcreateRecurringSlotUseCase {
         })
       );
 
+      // Save in DB
       const createdSlots = await Promise.all(
-        slotsToCreate.map((slot: AvailabilityEntities) =>
+        slotsToCreate.map((slot) =>
           this._availabilityRepo.createRecurring(slot)
         )
       );
 
-      return createdSlots.filter(
-        (slot): slot is AvailabilityEntities => slot !== null
-      );
+      // Filter nulls + map to DTOs
+      return createdSlots
+        .filter((slot): slot is AvailabilityResponseDto => slot !== null)
+        .map((slot) => AvailabilityMapper.toDto(slot));
     } catch (error) {
       console.error("Error from CreateRecurringSlotUseCase:", error);
       throw new BadRequest("Failed to create recurring slots, try again later");

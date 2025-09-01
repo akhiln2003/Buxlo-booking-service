@@ -7,7 +7,7 @@ import { IrecurringData } from "../../../domain/interfaces/IrecurringData";
 import {
   AvailabilityMapper,
   AvailabilityResponseDto,
-} from "../../../zodSchemaDto/output/availabilityResponse.dto";
+} from "../../../domain/zodSchemaDto/output/availabilityResponse.dto";
 
 export class CreateRecurringSlotUseCase implements IcreateRecurringSlotUseCase {
   constructor(private _availabilityRepo: IavailabilityRepository) {}
@@ -66,7 +66,7 @@ export class CreateRecurringSlotUseCase implements IcreateRecurringSlotUseCase {
 
       // Filter nulls + map to DTOs
       return createdSlots
-        .filter((slot): slot is AvailabilityResponseDto => slot !== null)
+        .filter((slot): slot is AvailabilityEntities => slot !== null)
         .map((slot) => AvailabilityMapper.toDto(slot));
     } catch (error) {
       console.error("Error from CreateRecurringSlotUseCase:", error);

@@ -10,7 +10,7 @@ import {
   connectDB,
   disconnectDB,
 } from "./infrastructure/database/mongodb/connection";
-import { grpcService } from "./infrastructure/rpc/grpc/server";
+import { grpcService } from "./infrastructure/rpc/grpc/bookingServer";
 // import { messageBroker } from "./infrastructure/MessageBroker/config";
 
 export class App {

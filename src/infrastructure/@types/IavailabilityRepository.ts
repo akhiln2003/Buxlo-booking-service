@@ -1,9 +1,15 @@
 import { AvailabilityEntities } from "../../domain/entities/availabilityEntities";
-import { AvailabilityResponseDto } from "../../zodSchemaDto/output/availabilityResponse.dto";
 
 export interface IavailabilityRepository {
-  create(data: AvailabilityEntities): Promise<AvailabilityResponseDto>;
-  createRecurring(data: AvailabilityEntities): Promise<AvailabilityResponseDto|null>;
-  findByMentorId(mentorId: string): Promise<AvailabilityResponseDto[]>;
+  create(data: AvailabilityEntities): Promise<AvailabilityEntities>;
+  createRecurring(
+    data: AvailabilityEntities
+  ): Promise<AvailabilityEntities | null>;
+  findById(id: string): Promise<AvailabilityEntities | null>;
+  update(
+    id: string,
+    data: Partial<AvailabilityEntities>
+  ): Promise<AvailabilityEntities>;
+  findByMentorId(mentorId: string): Promise<AvailabilityEntities[]>;
   getAverageSalary(mentorId: string): Promise<number>;
 }

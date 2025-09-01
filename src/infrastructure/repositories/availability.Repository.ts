@@ -2,13 +2,9 @@ import { BadRequest } from "@buxlo/common";
 import { AvailabilityEntities } from "../../domain/entities/availabilityEntities";
 import { AvailabilitySchema } from "../database/mongodb/schema/availability.schema";
 import { IavailabilityRepository } from "../@types/IavailabilityRepository";
-import {
-  AvailabilityMapper,
-  AvailabilityResponseDto,
-} from "../../zodSchemaDto/output/availabilityResponse.dto";
 
 export class AvailabilityRepository implements IavailabilityRepository {
-  async create(data: AvailabilityEntities): Promise<AvailabilityResponseDto> {
+  async create(data: AvailabilityEntities): Promise<AvailabilityEntities> {
     try {
       const timeToMinutes = (time: string): number => {
         const [hours, minutes] = time.split(":").map(Number);
@@ -43,15 +39,45 @@ export class AvailabilityRepository implements IavailabilityRepository {
 
       const newAvailability = AvailabilitySchema.build(data);
       const saveData = await newAvailability.save();
-      return AvailabilityMapper.toDto(saveData);
+      return saveData;
     } catch (error: any) {
       throw new BadRequest(`db error: ${error.message}`);
     }
   }
 
+  async findById(id: string): Promise<AvailabilityEntities | null> {
+    try {
+      const availability = await AvailabilitySchema.findById(id);
+      return availability ? availability : null;
+    } catch (error: any) {
+      throw new BadRequest(`Failed to get userDetails: ${error.message}`);
+    }
+  }
+
+  async update(
+    id: string,
+    data: Partial<AvailabilityEntities>
+  ): Promise<AvailabilityEntities> {
+    try {
+      const updatedData = await AvailabilitySchema.findByIdAndUpdate(
+        id,
+        { $set: data },
+        { new: true }
+      );
+
+      if (!updatedData) throw new BadRequest("Faild to find slot");
+      return updatedData;
+    } catch (error: any) {
+      // customLogger.error(`db error to update user ${userId}: ${error.message}`);
+      throw new BadRequest(
+        `Failed to update userProfileData: ${error.message}`
+      );
+    }
+  }
+
   async createRecurring(
     data: AvailabilityEntities
-  ): Promise<AvailabilityResponseDto | null> {
+  ): Promise<AvailabilityEntities | null> {
     try {
       const timeToMinutes = (time: string): number => {
         const [hours, minutes] = time.split(":").map(Number);
@@ -78,16 +104,16 @@ export class AvailabilityRepository implements IavailabilityRepository {
 
       const newAvailability = AvailabilitySchema.build(data);
       const saveData = await newAvailability.save();
-      return AvailabilityMapper.toDto(saveData);
+      return saveData;
     } catch (error: any) {
       return null;
     }
   }
 
-  async findByMentorId(mentorId: string): Promise<AvailabilityResponseDto[]> {
+  async findByMentorId(mentorId: string): Promise<AvailabilityEntities[]> {
     try {
       const slots = await AvailabilitySchema.find({ mentorId });
-      return slots.map((slot) => AvailabilityMapper.toDto(slot));
+      return slots;
     } catch (error: any) {
       console.error("Error fetching availabilities:", error);
       throw new BadRequest(`Failed to fetch availabilities: ${error.message}`);

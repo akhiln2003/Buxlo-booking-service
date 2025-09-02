@@ -1,10 +1,10 @@
 import HttpStatusCode from "@buxlo/common/build/common/httpStatusCode";
 import { NextFunction, Request, Response } from "express";
-import { IcreateRecurringSlotUseCase } from "../../../application/interface/mentor/IcreateRecurringSlotUseCase";
+import { ICreateRecurringSlotUseCase } from "../../../application/interface/mentor/ICreateRecurringSlotUseCase";
 
 export class CreateRecurringSlotController {
   constructor(
-    private _createRecurringSlotUseCase: IcreateRecurringSlotUseCase
+    private _createRecurringSlotUseCase: ICreateRecurringSlotUseCase
   ) {}
 
   create = async (req: Request, res: Response, next: NextFunction) => {

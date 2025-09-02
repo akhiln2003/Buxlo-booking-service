@@ -1,4 +1,4 @@
-export interface IrecurringData {
+export interface IRecurringData {
   mentorId: string;
   days: string[];
   startTime: string;

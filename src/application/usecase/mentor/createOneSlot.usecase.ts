@@ -1,14 +1,14 @@
 import { BadRequest } from "@buxlo/common";
-import { IcreateOneSlotUseCase } from "../../interface/mentor/IcreateOneSlotUseCase";
-import { IavailabilityRepository } from "../../../infrastructure/@types/IavailabilityRepository";
+import { ICreateOneSlotUseCase } from "../../interface/mentor/ICreateOneSlotUseCase";
+import { IAvailabilityRepository } from "../../../infrastructure/@types/IAvailabilityRepository";
 import { AvailabilityEntities } from "../../../domain/entities/availabilityEntities";
 import {
   AvailabilityMapper,
   AvailabilityResponseDto,
 } from "../../../domain/zodSchemaDto/output/availabilityResponse.dto";
 
-export class CreateOneSlotUseCase implements IcreateOneSlotUseCase {
-  constructor(private _availabilityRepo: IavailabilityRepository) {}
+export class CreateOneSlotUseCase implements ICreateOneSlotUseCase {
+  constructor(private _availabilityRepo: IAvailabilityRepository) {}
   async execute(data: AvailabilityEntities): Promise<AvailabilityResponseDto> {
     try {
       const newSlot = await this._availabilityRepo.create(data);

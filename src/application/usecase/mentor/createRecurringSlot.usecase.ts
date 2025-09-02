@@ -1,18 +1,18 @@
 import { RRule, Weekday } from "rrule";
 import { BadRequest } from "@buxlo/common";
-import { IcreateRecurringSlotUseCase } from "../../interface/mentor/IcreateRecurringSlotUseCase";
+import { ICreateRecurringSlotUseCase } from "../../interface/mentor/ICreateRecurringSlotUseCase";
 import { AvailabilityEntities } from "../../../domain/entities/availabilityEntities";
-import { IavailabilityRepository } from "../../../infrastructure/@types/IavailabilityRepository";
-import { IrecurringData } from "../../../domain/interfaces/IrecurringData";
+import { IAvailabilityRepository } from "../../../infrastructure/@types/IAvailabilityRepository";
+import { IRecurringData } from "../../../domain/interfaces/IRecurringData";
 import {
   AvailabilityMapper,
   AvailabilityResponseDto,
 } from "../../../domain/zodSchemaDto/output/availabilityResponse.dto";
 
-export class CreateRecurringSlotUseCase implements IcreateRecurringSlotUseCase {
-  constructor(private _availabilityRepo: IavailabilityRepository) {}
+export class CreateRecurringSlotUseCase implements ICreateRecurringSlotUseCase {
+  constructor(private _availabilityRepo: IAvailabilityRepository) {}
 
-  async execute(data: IrecurringData): Promise<AvailabilityResponseDto[]> {
+  async execute(data: IRecurringData): Promise<AvailabilityResponseDto[]> {
     try {
       const { mentorId, days, startTime, duration, startDate, endDate } = data;
 

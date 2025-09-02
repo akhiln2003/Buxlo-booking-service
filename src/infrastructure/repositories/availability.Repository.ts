@@ -1,9 +1,9 @@
 import { BadRequest } from "@buxlo/common";
 import { AvailabilityEntities } from "../../domain/entities/availabilityEntities";
 import { AvailabilitySchema } from "../database/mongodb/schema/availability.schema";
-import { IavailabilityRepository } from "../@types/IavailabilityRepository";
+import { IAvailabilityRepository } from "../@types/IAvailabilityRepository";
 
-export class AvailabilityRepository implements IavailabilityRepository {
+export class AvailabilityRepository implements IAvailabilityRepository {
   async create(data: AvailabilityEntities): Promise<AvailabilityEntities> {
     try {
       const timeToMinutes = (time: string): number => {

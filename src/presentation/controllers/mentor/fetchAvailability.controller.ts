@@ -1,9 +1,9 @@
 import HttpStatusCode from "@buxlo/common/build/common/httpStatusCode";
 import { NextFunction, Request, Response } from "express";
-import { IfetchAvailabilityUseCase } from "../../../application/interface/mentor/IfetchAvailabilityUseCase";
+import { IFetchAvailabilityUseCase } from "../../../application/interface/mentor/IFetchAvailabilityUseCase";
 
 export class FetchAvailabilityController {
-  constructor(private _fetchAvailabilityUseCase: IfetchAvailabilityUseCase) {}
+  constructor(private _fetchAvailabilityUseCase: IFetchAvailabilityUseCase) {}
 
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {

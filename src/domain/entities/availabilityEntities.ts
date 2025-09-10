@@ -1,4 +1,3 @@
-
 export class AvailabilityEntities {
   constructor(
     public mentorId: string,
@@ -8,6 +7,8 @@ export class AvailabilityEntities {
     public status: "available" | "booked" | "cancelled" | "pending",
     public isBooked: boolean,
     public salary: number,
+    public createdAt: Date,
+    public updatedAt: Date,
     public description?: string,
     public id?: string
   ) {}

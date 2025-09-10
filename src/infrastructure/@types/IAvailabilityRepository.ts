@@ -1,7 +1,7 @@
 import { AvailabilityEntities } from "../../domain/entities/availabilityEntities";
 
 export interface IAvailabilityRepository {
-  create(data: AvailabilityEntities): Promise<AvailabilityEntities>;
+  create(data: Partial<AvailabilityEntities>): Promise<AvailabilityEntities>;
   createRecurring(
     data: AvailabilityEntities
   ): Promise<AvailabilityEntities | null>;

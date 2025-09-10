@@ -22,6 +22,8 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   oneofs: true,
 });
 
+
+
 const paymentProto = (grpc.loadPackageDefinition(packageDefinition) as any)
   .payment;
 

@@ -1,9 +1,11 @@
 import { RRule, Weekday } from "rrule";
 import { BadRequest } from "@buxlo/common";
-import { ICreateRecurringSlotUseCase } from "../../interface/mentor/ICreateRecurringSlotUseCase";
+import {
+  ICreateRecurringSlotUseCase,
+  ICreateRecurringSlotUseCaseProps,
+} from "../../interface/mentor/ICreateRecurringSlotUseCase";
 import { AvailabilityEntities } from "../../../domain/entities/availabilityEntities";
 import { IAvailabilityRepository } from "../../../infrastructure/@types/IAvailabilityRepository";
-import { IRecurringData } from "../../../domain/interfaces/IRecurringData";
 import {
   AvailabilityMapper,
   AvailabilityResponseDto,
@@ -12,7 +14,9 @@ import {
 export class CreateRecurringSlotUseCase implements ICreateRecurringSlotUseCase {
   constructor(private _availabilityRepo: IAvailabilityRepository) {}
 
-  async execute(data: IRecurringData): Promise<AvailabilityResponseDto[]> {
+  async execute(
+    data: ICreateRecurringSlotUseCaseProps
+  ): Promise<AvailabilityResponseDto[]> {
     try {
       const { mentorId, days, startTime, duration, startDate, endDate } = data;
 

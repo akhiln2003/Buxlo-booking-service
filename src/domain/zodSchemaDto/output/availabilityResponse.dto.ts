@@ -1,11 +1,12 @@
 import { z } from "zod";
+import { AvailabilityEntities } from "../../entities/availabilityEntities";
 
 export const AvailabilityResponseDto = z.object({
   id: z.string(),
   mentorId: z.string(),
-  date: z.string(), 
+  date: z.string(),
   description: z.string(),
-  startTime: z.string(), 
+  startTime: z.string(),
   duration: z.number(),
   salary: z.number(),
   status: z.string(),
@@ -17,11 +18,11 @@ export const AvailabilityResponseDto = z.object({
 export type AvailabilityResponseDto = z.infer<typeof AvailabilityResponseDto>;
 
 export class AvailabilityMapper {
-  static toDto(slot: any): AvailabilityResponseDto {
+  static toDto(slot: AvailabilityEntities): AvailabilityResponseDto {
     return AvailabilityResponseDto.parse({
-      id: slot._id?.toString() ?? slot.id,
+      id: slot.id,
       mentorId: slot.mentorId,
-      date: slot.date, 
+      date: slot.date,
       description: slot.description,
       startTime: slot.startTime,
       duration: slot.duration,

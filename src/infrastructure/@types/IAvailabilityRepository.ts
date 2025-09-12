@@ -1,4 +1,4 @@
-import { AvailabilityEntities } from "../../domain/entities/availabilityEntities";
+import { AvailabilityEntities } from "../../domain/entities/availability.entities";
 
 export interface IAvailabilityRepository {
   create(data: Partial<AvailabilityEntities>): Promise<AvailabilityEntities>;
@@ -10,6 +10,9 @@ export interface IAvailabilityRepository {
     id: string,
     data: Partial<AvailabilityEntities>
   ): Promise<AvailabilityEntities>;
-  findByMentorId(mentorId: string): Promise<AvailabilityEntities[]>;
+  findByMentorId(
+    mentorId: string,
+    fromDate?: string
+  ): Promise<AvailabilityEntities[]>;
   getAverageSalary(mentorId: string): Promise<number>;
 }

@@ -4,7 +4,7 @@ import {
   ICreateRecurringSlotUseCase,
   ICreateRecurringSlotUseCaseProps,
 } from "../../interface/mentor/ICreateRecurringSlotUseCase";
-import { AvailabilityEntities } from "../../../domain/entities/availabilityEntities";
+import { AvailabilityEntities } from "../../../domain/entities/availability.entities";
 import { IAvailabilityRepository } from "../../../infrastructure/@types/IAvailabilityRepository";
 import {
   AvailabilityMapper,

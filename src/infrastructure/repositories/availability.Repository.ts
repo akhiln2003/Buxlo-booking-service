@@ -1,5 +1,5 @@
 import { BadRequest } from "@buxlo/common";
-import { AvailabilityEntities } from "../../domain/entities/availabilityEntities";
+import { AvailabilityEntities } from "../../domain/entities/availability.entities";
 import { AvailabilitySchema } from "../database/mongodb/schema/availability.schema";
 import { IAvailabilityRepository } from "../@types/IAvailabilityRepository";
 
@@ -110,9 +110,18 @@ export class AvailabilityRepository implements IAvailabilityRepository {
     }
   }
 
-  async findByMentorId(mentorId: string): Promise<AvailabilityEntities[]> {
+  async findByMentorId(
+    mentorId: string,
+    fromDate?: string
+  ): Promise<AvailabilityEntities[]> {
     try {
-      const slots = await AvailabilitySchema.find({ mentorId });
+      const query: any = { mentorId };
+
+      if (fromDate) {
+        query.date = { $gte: fromDate };
+      }
+
+      const slots = await AvailabilitySchema.find(query);
       return slots;
     } catch (error: any) {
       console.error("Error fetching availabilities:", error);

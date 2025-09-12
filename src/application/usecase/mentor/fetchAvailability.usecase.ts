@@ -10,7 +10,11 @@ export class FetchAvailabilityUseCase implements IFetchAvailabilityUseCase {
   constructor(private _availabilityRepo: IAvailabilityRepository) {}
   async execute(mentorId: string): Promise<AvailabilityResponseDto[]> {
     try {
-      const data = await this._availabilityRepo.findByMentorId(mentorId);
+      const data = await this._availabilityRepo.findByMentorId(
+        mentorId,
+        new Date().toISOString().split("T")[0]
+      );
+
       return data.map((slot) => AvailabilityMapper.toDto(slot));
     } catch (error) {
       console.error("Error from CreateOneSlotUseCase:", error);

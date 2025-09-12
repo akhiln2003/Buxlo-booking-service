@@ -5,7 +5,7 @@ import { IServer } from "./domain/interfaces/IServer";
 //   disconnectDB,
 // } from "./infrastructure/database/mongodb/connection";
 import loggerMiddleware from "./presentation/middlewares/loggerMiddleware";
-import { MentorRouter } from "./presentation/routes/mentorRouts";
+import { MentorRouter } from "./presentation/routes/mentor.routes";
 import {
   connectDB,
   disconnectDB,

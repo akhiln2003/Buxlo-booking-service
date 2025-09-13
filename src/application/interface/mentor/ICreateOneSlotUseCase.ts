@@ -1,4 +1,4 @@
-import { AvailabilityResponseDto } from "../../../domain/zodSchemaDto/output/availabilityResponse.dto";
+import { AvailabilityResponseDto } from "../../dto/availabilityResponse.dto";
 
 export interface ICreateOneSlotUseCaseProps {
   mentorId: string;

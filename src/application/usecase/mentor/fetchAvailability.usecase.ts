@@ -4,7 +4,7 @@ import { IFetchAvailabilityUseCase } from "../../interface/mentor/IFetchAvailabi
 import {
   AvailabilityMapper,
   AvailabilityResponseDto,
-} from "../../../domain/zodSchemaDto/output/availabilityResponse.dto";
+} from "../../dto/availabilityResponse.dto";
 
 export class FetchAvailabilityUseCase implements IFetchAvailabilityUseCase {
   constructor(private _availabilityRepo: IAvailabilityRepository) {}

@@ -1,4 +1,4 @@
-import { AvailabilityResponseDto } from "../../../domain/zodSchemaDto/output/availabilityResponse.dto";
+import { AvailabilityResponseDto } from "../../dto/availabilityResponse.dto";
 
 export interface IFetchAvailabilityUseCase {
   execute(mentorId: string): Promise<AvailabilityResponseDto[]>;

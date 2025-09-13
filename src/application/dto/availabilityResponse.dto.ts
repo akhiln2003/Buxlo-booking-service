@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AvailabilityEntities } from "../../entities/availability.entities";
+import { AvailabilityEntities } from "../../domain/entities/availability.entities";
 
 export const AvailabilityResponseDto = z.object({
   id: z.string(),

@@ -9,7 +9,7 @@ import { IAvailabilityRepository } from "../../../infrastructure/@types/IAvailab
 import {
   AvailabilityMapper,
   AvailabilityResponseDto,
-} from "../../../domain/zodSchemaDto/output/availabilityResponse.dto";
+} from "../../dto/availabilityResponse.dto";
 
 export class CreateRecurringSlotUseCase implements ICreateRecurringSlotUseCase {
   constructor(private _availabilityRepo: IAvailabilityRepository) {}

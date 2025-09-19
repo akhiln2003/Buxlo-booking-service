@@ -4,9 +4,9 @@ import { CreateOneSlotController } from "../controllers/mentor/createOneSlot.con
 import { validateReqBody, validateReqParams } from "@buxlo/common";
 import { CreateRecurringSlotController } from "../controllers/mentor/createRecurringSlot.controller";
 import { FetchAvailabilityController } from "../controllers/mentor/fetchAvailability.controller";
-import { createOneSlotDto } from "../../domain/zodSchemaDto/input/mentor/createOneSlot.dto";
-import { createRecurringSlotDto } from "../../domain/zodSchemaDto/input/mentor/createRecurringSlot.dto";
-import { fetchavailabilityDto } from "../../domain/zodSchemaDto/input/mentor/fetchavailability.dto";
+import { createOneSlotDto } from "../dto/mentor/createOneSlot.dto";
+import { createRecurringSlotDto } from "../dto/mentor/createRecurringSlot.dto";
+import { fetchavailabilityDto } from "../dto/mentor/fetchavailability.dto";
 
 export class MentorRouter {
   private _router: Router;

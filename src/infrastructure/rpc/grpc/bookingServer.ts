@@ -22,8 +22,6 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   oneofs: true,
 });
 
-
-
 const paymentProto = (grpc.loadPackageDefinition(packageDefinition) as any)
   .payment;
 
@@ -54,9 +52,15 @@ class BookingServiceGrpc {
           if (!status) throw new BadRequest("Status is required");
 
           const existingUser = await availabilityRepo.findById(id as string);
+
           if (existingUser) {
             // Map numeric status to string
-            let mappedStatus: "available" | "booked" | "cancelled" | "pending" | undefined;
+            let mappedStatus:
+              | "available"
+              | "booked"
+              | "cancelled"
+              | "pending"
+              | undefined;
             switch (status) {
               case 1:
                 mappedStatus = "available";
@@ -81,6 +85,7 @@ class BookingServiceGrpc {
               status: mappedStatus,
               isBooked,
             });
+
             callback(null, {
               id: updatedUser!.id,
               success: true,

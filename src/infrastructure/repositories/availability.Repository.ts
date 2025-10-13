@@ -110,7 +110,7 @@ export class AvailabilityRepository implements IAvailabilityRepository {
     }
   }
 
-  async findByMentorId(
+  async userFindByMentoryId(
     mentorId: string,
     fromDate?: string
   ): Promise<AvailabilityEntities[]> {
@@ -122,7 +122,45 @@ export class AvailabilityRepository implements IAvailabilityRepository {
       }
 
       const slots = await AvailabilitySchema.find(query);
+
       return slots;
+    } catch (error: any) {
+      console.error("Error fetching availabilities:", error);
+      throw new BadRequest(`Failed to fetch availabilities: ${error.message}`);
+    }
+  }
+
+  async findByMentorId(
+    mentorId: string,
+    page: number,
+    searchData?: string,
+    fromDate?: string
+  ): Promise<{ slots: AvailabilityEntities[]; totalPages: number }> {
+    try {
+      const limit = 10;
+      const skip = (page - 1) * limit;
+
+      const query: any = { mentorId };
+
+      if (fromDate) {
+        query.date = { $gte: fromDate };
+      }
+
+      if (searchData) {
+        query.$or = [
+          { title: { $regex: searchData, $options: "i" } },
+          { description: { $regex: searchData, $options: "i" } },
+        ];
+      }
+
+      const totalCount = await AvailabilitySchema.countDocuments(query);
+      const totalPages = Math.ceil(totalCount / limit);
+
+      const slots = await AvailabilitySchema.find(query)
+        .skip(skip)
+        .limit(limit);
+
+      return { slots, totalPages };
     } catch (error: any) {
       console.error("Error fetching availabilities:", error);
       throw new BadRequest(`Failed to fetch availabilities: ${error.message}`);
@@ -151,6 +189,26 @@ export class AvailabilityRepository implements IAvailabilityRepository {
       throw new BadRequest(
         `Failed to calculate average salary: ${error.message}`
       );
+    }
+  }
+
+  async delete(id: string): Promise<AvailabilityEntities> {
+    try {
+      const slot = await AvailabilitySchema.findById(id);
+      if (!slot) {
+        throw new BadRequest("Slot not found");
+      }
+
+      if (slot.status !== "available") {
+        throw new BadRequest(
+          `Cannot delete slot. Status is "${slot.status}", only available slots can be deleted.`
+        );
+      }
+
+      const deletedSlot = await AvailabilitySchema.findByIdAndDelete(id);
+      return deletedSlot!;
+    } catch (error: any) {
+      throw new BadRequest(`Failed to delete slot: ${error.message}`);
     }
   }
 }

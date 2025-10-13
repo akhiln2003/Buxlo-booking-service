@@ -7,9 +7,14 @@ export class FetchAvailabilityController {
 
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { mentorId } = req.params;
-      const slots = await this._fetchAvailabilityUseCase.execute(mentorId);
-      res.status(HttpStatusCode.OK).json({ slots });
+      const { mentorId, page, searchData } = req.query;
+
+      const slots = await this._fetchAvailabilityUseCase.execute(
+        String(mentorId),
+        Number(page),
+        String(searchData)
+      );
+      res.status(HttpStatusCode.OK).json(slots);
     } catch (error) {
       console.error("Error creating recurring slots:", error);
       next(error);

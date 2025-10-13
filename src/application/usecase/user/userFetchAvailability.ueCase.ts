@@ -1,28 +1,23 @@
 import { BadRequest } from "@buxlo/common";
 import { IAvailabilityRepository } from "../../../infrastructure/@types/IAvailabilityRepository";
-import { IFetchAvailabilityUseCase } from "../../interface/mentor/IFetchAvailabilityUseCase";
 import {
   AvailabilityMapper,
   AvailabilityResponseDto,
 } from "../../dto/availabilityResponse.dto";
+import { IUserFetchAvailabilityUseCase } from "../../interface/user/IUserFetchAvailabilityUseCase";
 
-export class FetchAvailabilityUseCase implements IFetchAvailabilityUseCase {
+export class UserFetchAvailabilityUseCase
+  implements IUserFetchAvailabilityUseCase
+{
   constructor(private _availabilityRepo: IAvailabilityRepository) {}
-  async execute(
-    mentorId: string,
-    page: number,
-    searchData?: string
-  ): Promise<{ slots: AvailabilityResponseDto[]; totalPages: number }> {
+  async execute(mentorId: string): Promise<AvailabilityResponseDto[]> {
     try {
-      const data = await this._availabilityRepo.findByMentorId(
+      const data = await this._availabilityRepo.userFindByMentoryId(
         mentorId,
-        page,
-        searchData,
         new Date().toISOString().split("T")[0]
       );
 
-      const slots = data.slots.map((slot) => AvailabilityMapper.toDto(slot));
-      return{ slots , totalPages:data.totalPages}
+      return data.map((slot) => AvailabilityMapper.toDto(slot));
     } catch (error) {
       console.error("Error from CreateOneSlotUseCase:", error);
       throw new BadRequest("Failed to fetch availability");

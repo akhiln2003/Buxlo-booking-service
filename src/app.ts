@@ -11,6 +11,7 @@ import {
   disconnectDB,
 } from "./infrastructure/database/mongodb/connection";
 import { grpcService } from "./infrastructure/rpc/grpc/bookingServer";
+import { UserRouter } from "./presentation/routes/user.routes";
 // import { messageBroker } from "./infrastructure/MessageBroker/config";
 
 export class App {
@@ -30,8 +31,10 @@ export class App {
   }
   private _registerRoutes(): void {
     const mentorRoutes = new MentorRouter().getRouter();
+    const userRoutes = new UserRouter().getRouter();
 
     this._server.registerRoutes("/api/booking/mentor", mentorRoutes);
+    this._server.registerRoutes("/api/booking/user", userRoutes);
   }
 
   private _registerErrorHandler(): void {

@@ -12,7 +12,14 @@ export interface IAvailabilityRepository {
   ): Promise<AvailabilityEntities>;
   findByMentorId(
     mentorId: string,
+    page: number,
+    searchData?: string,
+    fromDate?: string
+  ): Promise<{ slots: AvailabilityEntities[]; totalPages: number }>;
+  userFindByMentoryId(
+    mentorId: string,
     fromDate?: string
   ): Promise<AvailabilityEntities[]>;
   getAverageSalary(mentorId: string): Promise<number>;
+  delete(id: string): Promise<AvailabilityEntities>;
 }

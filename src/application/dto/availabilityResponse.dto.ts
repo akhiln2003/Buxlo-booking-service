@@ -5,7 +5,7 @@ export const AvailabilityResponseDto = z.object({
   id: z.string(),
   mentorId: z.string(),
   date: z.string(),
-  description: z.string(),
+  description: z.string().optional(),
   startTime: z.string(),
   duration: z.number(),
   salary: z.number(),

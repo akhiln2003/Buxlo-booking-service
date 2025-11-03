@@ -10,16 +10,21 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@eslint/js": "^9.39.0",
     "@types/cookie-parser": "^1.4.9",
     "@types/express": "^5.0.3",
     "@types/morgan": "^1.9.10",
     "@types/node": "^24.1.0",
     "dotenv": "^17.2.1",
+    "eslint": "^9.39.0",
     "express": "^5.1.0",
+    "globals": "^16.5.0",
+    "jiti": "^2.6.1",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.46.2"
   },
   "dependencies": {
     "@buxlo/common": "^1.0.99",

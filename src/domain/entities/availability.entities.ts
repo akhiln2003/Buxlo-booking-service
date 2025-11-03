@@ -10,6 +10,8 @@ export class AvailabilityEntities {
     public createdAt: Date,
     public updatedAt: Date,
     public description?: string,
+    public lockedUntil?: Date | null,
+    public lockedBy?: string | null,
     public id?: string
   ) {}
 }

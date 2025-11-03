@@ -10,12 +10,15 @@ import {
   connectDB,
   disconnectDB,
 } from "./infrastructure/database/mongodb/connection";
-import { grpcService } from "./infrastructure/rpc/grpc/bookingServer";
 import { UserRouter } from "./presentation/routes/user.routes";
+import { BookingGrpcServer } from "./infrastructure/rpc/grpc/bookingServer";
 // import { messageBroker } from "./infrastructure/MessageBroker/config";
 
 export class App {
-  constructor(private _server: IServer) {}
+  constructor(
+    private _server: IServer,
+    private _grpcServer = new BookingGrpcServer()
+  ) {}
 
   async initialize(): Promise<void> {
     await this._connectDB();
@@ -61,8 +64,7 @@ export class App {
 
   private async _connectGrpc(): Promise<void> {
     try {
-      await grpcService.start();
-      console.log("gRPC server started successfully.");
+      this._grpcServer.start(50052); 
     } catch (error) {
       console.error("Failed to start gRPC server:", error);
     }

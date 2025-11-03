@@ -10,6 +10,8 @@ interface AvailabilityAttributes {
   duration: number;
   status: "available" | "booked" | "cancelled" | "pending";
   isBooked: boolean;
+  lockedUntil?: Date | null;
+  lockedBy?: string | null;
 }
 
 // Interface for availability document (instance of saved document)
@@ -22,6 +24,8 @@ interface AvailabilityDocument extends mongoose.Document {
   salary: number;
   status: "available" | "booked" | "cancelled" | "pending";
   isBooked: boolean;
+  lockedUntil?: Date | null;
+  lockedBy?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -70,6 +74,15 @@ const availabilitySchema = new mongoose.Schema(
     isBooked: {
       type: Boolean,
       required: true,
+    },
+   lockedUntil: {
+      type: Date,
+      index: { expireAfterSeconds: 0 }, 
+      default: null,
+    },
+    lockedBy: {
+      type: String,
+      default: null,
     },
   },
   {

@@ -11,6 +11,8 @@ export const AvailabilityResponseDto = z.object({
   salary: z.number(),
   status: z.string(),
   isBooked: z.boolean(),
+  lockedUntil: z.date().optional(),
+  lockedBy: z.string().optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });

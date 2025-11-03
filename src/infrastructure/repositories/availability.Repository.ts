@@ -211,4 +211,37 @@ export class AvailabilityRepository implements IAvailabilityRepository {
       throw new BadRequest(`Failed to delete slot: ${error.message}`);
     }
   }
+
+  async lockSlot(
+    slotId: string,
+    userId: string
+  ): Promise<AvailabilityEntities> {
+    try {
+      const now = new Date();
+      const lockExpiry = new Date(now.getTime() + 5 * 60 * 1000);
+      const slot = await AvailabilitySchema.findById(slotId);
+
+      if (!slot) {
+        throw new BadRequest("Slot not found");
+      }
+      
+      if (
+        slot.status === "booked" ||
+        (slot.lockedBy != userId && slot.lockedUntil && slot.lockedUntil > now)
+      ) {
+        throw new BadRequest(
+          "Slot is currrently unavailable"
+        );
+      }
+
+      if (slot.lockedBy != userId) {
+        slot.lockedBy = userId;
+        slot.lockedUntil = lockExpiry;
+      }
+
+      return await slot.save();
+    } catch (error: any) {
+      throw new BadRequest(`Failed to lock slot: ${error.message}`);
+    }
+  }
 }

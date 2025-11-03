@@ -22,4 +22,5 @@ export interface IAvailabilityRepository {
   ): Promise<AvailabilityEntities[]>;
   getAverageSalary(mentorId: string): Promise<number>;
   delete(id: string): Promise<AvailabilityEntities>;
+  lockSlot(slotId: string, userId: string): Promise<AvailabilityEntities>;
 }

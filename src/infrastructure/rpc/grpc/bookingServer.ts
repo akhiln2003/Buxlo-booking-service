@@ -1,13 +1,10 @@
-import {
-  BadRequest,
-  UpdateAvailabilityRequest,
-  UpdateAvailabilityResponse,
-} from "@buxlo/common";
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 import path from "path";
+import { BadRequest } from "@buxlo/common";
 import { AvailabilityRepository } from "../../repositories/availability.Repository";
 
+// Path to the proto file
 const PROTO_PATH = path.join(
   __dirname,
   "../../../../node_modules/@buxlo/common/src/protos/payment.proto"
@@ -25,108 +22,132 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
 const paymentProto = (grpc.loadPackageDefinition(packageDefinition) as any)
   .payment;
 
-class BookingServiceGrpc {
+/**
+ * Booking gRPC Server
+ */
+export class BookingGrpcServer {
   private _server: grpc.Server;
-  private _port: number;
 
-  constructor(port: number) {
+  constructor() {
     this._server = new grpc.Server();
-    this._port = port;
     this._initializeService();
   }
 
+  /**
+   * Initialize BookingService implementation
+   */
   private _initializeService() {
     const bookingService = {
       UpdateAvailability: async (
         call: grpc.ServerUnaryCall<
-          UpdateAvailabilityRequest,
-          UpdateAvailabilityResponse
+          { id: string; status: number | string; isBooked: boolean },
+          { id: string; success: boolean }
         >,
-        callback: grpc.sendUnaryData<UpdateAvailabilityResponse>
+        callback: grpc.sendUnaryData<{ id: string; success: boolean }>
       ) => {
         const { id, status, isBooked } = call.request;
+        console.log("📞 gRPC UpdateAvailability called with:", call.request);
 
         const availabilityRepo = new AvailabilityRepository();
+
         try {
+          // ✅ Validate inputs
           if (!id) throw new BadRequest("Id is required");
-          if (!status) throw new BadRequest("Status is required");
+          if (status === undefined || status === null)
+            throw new BadRequest("Status is required");
 
-          const existingUser = await availabilityRepo.findById(id as string);
-
-          if (existingUser) {
-            // Map numeric status to string
-            let mappedStatus:
-              | "available"
-              | "booked"
-              | "cancelled"
-              | "pending"
-              | undefined;
-            switch (status) {
-              case 1:
-                mappedStatus = "available";
-                break;
-              case 2:
-                mappedStatus = "booked";
-                break;
-              case 3:
-                mappedStatus = "cancelled";
-                break;
-              case "available":
-              case "booked":
-              case "cancelled":
-              case "pending":
-                mappedStatus = status;
-                break;
-              default:
-                mappedStatus = undefined;
-            }
-
-            const updatedUser = await availabilityRepo.update(id, {
-              status: mappedStatus,
-              isBooked,
-            });
-
-            callback(null, {
-              id: updatedUser!.id,
-              success: true,
-            });
+          // ✅ Check existence
+          const existing = await availabilityRepo.findById(id as string);
+          if (!existing) {
+            return callback(
+              {
+                code: grpc.status.NOT_FOUND,
+                message: "Availability not found",
+              },
+              null
+            );
           }
+
+          // ✅ Map enum number to string
+          let mappedStatus:
+            | "available"
+            | "booked"
+            | "cancelled"
+            | "pending"
+            | undefined;
+
+          switch (status) {
+            case 0:
+              mappedStatus = "available";
+              break;
+            case 1:
+              mappedStatus = "booked";
+              break;
+            case 2:
+              mappedStatus = "cancelled";
+              break;
+            case 3:
+              mappedStatus = "pending";
+              break;
+            case "available":
+            case "booked":
+            case "cancelled":
+            case "pending":
+              mappedStatus = status;
+              break;
+            default:
+              mappedStatus = undefined;
+          }
+
+          if (!mappedStatus)
+            throw new BadRequest(`Invalid status value: ${status}`);
+
+          // ✅ Update in DB
+          const updated = await availabilityRepo.update(id, {
+            status: mappedStatus,
+            isBooked,
+          });
+
+          console.log("✅ Updated availability via gRPC:", updated);
+
+          // ✅ Send response and return ONCE
+          return callback(null, {
+            id: updated!.id as string,
+            success: true,
+          });
         } catch (error: any) {
-          console.error("Error creating user:", error.message);
-          callback(
-            { code: grpc.status.INTERNAL, message: "creation failed" },
+          console.error("❌ Error updating availability:", error.message);
+          return callback(
+            { code: grpc.status.INTERNAL, message: error.message },
             null
           );
         }
-        callback(null, {
-          id,
-          success: true,
-        });
       },
     };
 
+    // ✅ Register service
     this._server.addService(
       paymentProto.BookingService.service,
       bookingService
     );
   }
 
-  public start(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this._server.bindAsync(
-        `0.0.0.0:${this._port}`,
-        grpc.ServerCredentials.createInsecure(),
-        (err) => {
-          if (err) return reject(err);
-          console.log(`Booking gRPC Service running on port ${this._port}`);
-          this._server.start();
-          resolve();
+  /**
+   * Start the gRPC server
+   */
+  public start(port: number) {
+    const address = `0.0.0.0:${port}`;
+    this._server.bindAsync(
+      address,
+      grpc.ServerCredentials.createInsecure(),
+      (err, port) => {
+        if (err) {
+          console.error("❌ Failed to start gRPC server:", err);
+          return;
         }
-      );
-    });
+        console.log(` Booking gRPC server running on port ${port}`);
+        this._server.start();
+      }
+    );
   }
 }
-
-export const grpcService = new BookingServiceGrpc(
-  Number(process.env.GRPC_PORT) || 50052
-);

@@ -1,102 +1,70 @@
-# Booking Service
+# BUXLO Booking Service
 
-This service handles the booking functionality of the BUXLO application. It manages creating, retrieving, and managing bookings. It uses MongoDB for data storage and communicates with other services via Kafka and gRPC.
+The **BUXLO Booking Service** manages the mentorship schedule on the platform. It handles available slot creation, recurring schedule generation using the **rrule** rule builder, slot reservation locks, and session confirmations. It hosts a gRPC server on port `50052` to allow other services to query and lock session slots during checkout.
 
-## Table of Contents
+---
 
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-- [Usage](#usage)
-- [Environment Variables](#environment-variables)
-- [API Endpoints](#api-endpoints)
-- [gRPC Services](#grpc-services)
-- [Kafka Integration](#kafka-integration)
-- [Running Tests](#running-tests)
-- [Deployment](#deployment)
+## 🛠️ Technology Stack
 
-## Getting Started
+- **Runtime**: [Node.js](https://nodejs.org/) (TypeScript)
+- **Web Framework**: [Express](https://expressjs.com/) (Express 5.x)
+- **Data Persistence**: [MongoDB](https://www.mongodb.com/) via [Mongoose](https://mongoosejs.com/)
+- **Recurrence Engine**: [rrule](https://github.com/jakubroztocil/rrule) (iCalendar RFC-5545 availability schedules)
+- **Real-Time Updates**: [Socket.io](https://socket.io/) (for live schedule updates)
+- **Message Broker**: [Apache Kafka](https://kafka.apache.org/) (publishes `booking-created`, `booking-cancelled` events)
+- **RPC Framework**: [gRPC Node](https://grpc.io/docs/languages/node/) (runs server on port `50052`)
+- **Shared Codebase**: `@buxlo/common`
 
-### Prerequisites
+---
 
-- Node.js (v18)
-- npm
-- MongoDB
-- Kafka
+## ⚙️ Environment Variables
 
-### Installation
+Create a `.env` file in the `booking/` directory:
 
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   ```
-2. Navigate to the `booking` directory:
-   ```bash
-   cd Microservices/booking
-   ```
-3. Install the dependencies:
-   ```bash
-   npm install
-   ```
+| Variable | Required | Default Value | Description |
+| :--- | :---: | :--- | :--- |
+| `PORT` | Yes | `4006` | Express server port. |
+| `MONGODB_URI` | Yes | `mongodb+srv://...` | MongoDB database connection string for `Booking` namespace. |
+| `AWS_S3_BUCKET_NAME` | Yes | `s3-buxlo` | AWS S3 Bucket Name for scheduling attachments. |
+| `AWS_S3_BUCKET_REGION` | Yes | `ap-southeast-2` | AWS Region. |
+| `AWS_S3_BUCKET_ACCESS_KEY` | Yes | `AKIAR52NK44...` | IAM access key. |
+| `AWS_S3_BUCKET_SECRET_ACCESS_KEY` | Yes | `rEN5RuIp8hA1z...` | IAM secret access key. |
+| `KAFKA_BROKER` | Yes | `kafka:9092` | Network location of the Kafka broker. |
+| `KAFKA_CLIENT_ID` | Yes | `booking-service`| Kafka client identifier. |
+| `KAFKA_GROUP_ID` | Yes | `booking-group` | Kafka consumer group identifier. |
+| `GRPC_PORT` | Yes | `50052` | Port on which the Booking gRPC Server runs. |
+| `FRONT_END_BASE_URL` | Yes | `http://localhost:5173` | UI base URL. |
 
-## Usage
+---
 
-To start the service in development mode, run:
+## 📡 Port & RPC Configurations
 
-```bash
-npm start
-```
+### REST Routes
+- `GET /api/booking/slots/:mentorId` — Retrieves available slots for a mentor.
+- `POST /api/booking/slots` — Mentors publish availability using rrule syntax.
+- `POST /api/booking/book` — Reserves a slot (sets pending status).
 
-This will start the server using `ts-node-dev`.
+### gRPC Server (`:50052`)
+- Exposes methods for confirming or unlocking session slots synchronously when payment transactions are processed.
 
-## Environment Variables
+### Kafka Event Publishing
+- Publishes events to `booking-events` topic upon booking confirmation.
 
-This service requires the following environment variables to be set. You can create a `.env` file in the root of the `booking` directory and add the following:
+---
 
-| Variable                          | Description                               | Default Value                                                                               |
-| --------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `PORT`                            | The port the service will run on.         | `4006`                                                                                      |
-| `MONGODB_URI`                     | The connection URI for the MongoDB database. | `mongodb+srv://<user>:<password>@buxlo.hpj5x.mongodb.net/Booking?retryWrites=true&w=majority&appName=Buxlo` |
-| `AWS_S3_BUCKET_NAME`              | The name of the AWS S3 bucket.            | `buxlo-bucket`                                                                              |
-| `AWS_S3_BUCKET_REGION`            | The region of the AWS S3 bucket.          | `eu-north-1`                                                                                |
-| `AWS_S3_BUCKET_ACCESS_KEY`        | The access key for the AWS S3 bucket.     | `AKIA42PHHT2HQGKHIMFB`                                                                      |
-| `AWS_S3_BUCKET_SECRET_ACCESS_KEY` | The secret access key for the AWS S3 bucket. | `REDACTED — set in .env`                                                   |
-| `KAFKA_CLIENT_ID`                 | The client ID for Kafka.                  | `booking-service`                                                                           |
-| `KAFKA_BROKER`                    | The Kafka broker address.                 | `kafka:9092`                                                                                |
-| `KAFKA_GROUP_ID`                  | The Kafka group ID.                       | `booking-group`                                                                             |
-| `GRPC_PORT`                       | The port for the gRPC server.             | `50052`                                                                                     |
-| `CLIENT_URL`                      | The base URL of the client application.   | `http://localhost:5173`                                                                     |
+## 🏃 Local Setup & Run
 
-<!-- 
-## API Endpoints
-
-This service exposes RESTful endpoints for managing bookings.
-*(Detailed documentation of the API endpoints should be added here)* -->
-
-## gRPC Services
-
-This service exposes a gRPC server on the port specified by the `GRPC_PORT` environment variable.
-
-## Kafka Integration
-
-This service uses Kafka for asynchronous communication. It acts as a producer and consumer.
-
-<!-- ## Running Tests
-
-There are no test scripts configured for this service yet. -->
-
-## Deployment
-
-This service can be containerized using Docker. A `Dockerfile` is provided in the root of the `booking` directory.
-
-To build the Docker image:
+Inside the `booking/` directory:
 
 ```bash
-docker build -t booking-service .
-```
+# 1. Install dependencies
+npm install
 
-To run the Docker container:
-
-```bash
-docker run -p 4006:4006 booking-service
+# 2. Run the server
+npm run start
 ```
+Starts `ts-node-dev src/server.ts` compiling TypeScript in real-time.
+
+---
+
+Developed for **BUXLO Personal Finance & Mentorship Platform**.
